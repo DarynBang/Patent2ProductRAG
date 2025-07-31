@@ -78,7 +78,8 @@ def main():
     # Initialize pipeline with configs
 
     # Consistent index folder under PDF dir
-    index_dir = r"C:\Users\Daryn Bang\Desktop\Internship\RAG_experiments\RAG_INDEX"
+    index_dir = r"RAG_INDEX"
+    
     patent_abstract = """An apparatus and a method for diagnosis are provided.
 The apparatus for diagnosis lesion include: a model generation unit configured to categorize learning data into one or more categories and to generate
 one or more categorized diagnostic models based on the categorized learning data, a model selection unit configured to select one or more diagnostic model
