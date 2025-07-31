@@ -475,8 +475,8 @@ class FirmSummaryRAG:
 
 def main():
     # CONFIGURATION
-    INDEX_DIR = r"C:\Users\Daryn Bang\Desktop\Internship\RAG_experiments\RAG_INDEX"
-    firm_csv = r'C:\Users\Daryn Bang\Desktop\Internship\RAG_experiments\firms_summary_keywords_qwen.csv'
+    INDEX_DIR = r"RAG_INDEX"
+    firm_csv = r'firms_summary_keywords_qwen.csv'
 
     firm_df = pd.read_csv(firm_csv)
 
@@ -490,7 +490,7 @@ def main():
     firm_rag.ingest_all(force_reindex=False)
 
     # # to rebuild from scratch
-    # firm_rag.ingest_all(force_reindex=False)
+    # firm_rag.ingest_all(force_reindex=True)
 
     # Add or skip a single company summary:
     # res = firm_rag.add_one(
