@@ -4,6 +4,7 @@ myenv/
 .env
 logs/
 exports/*
+RAG_INDEX/
 *.txt
 
 # Byte-compiled / optimized / DLL files
