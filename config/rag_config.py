@@ -2,8 +2,8 @@
 # EMBED_MODEL = "sentence-transformers/all-MiniLM-L12-v2"
 
 firm_config = {
-    "firm_csv": r'C:\Users\Daryn Bang\Desktop\Internship\RAG_experiments\firms_summary_keywords_qwen.csv',
-    "firm_id_to_text_mapping": r'C:\Users\Daryn Bang\Desktop\Internship\RAG_experiments\firm_id_to_text_mapping.csv',
+    "firm_csv": r'firms_summary_keywords_qwen.csv',
+    "firm_id_to_text_mapping": r'firm_id_to_text_mapping.csv',
     "embed_model": "sentence-transformers/all-MiniLM-L12-v2",          # or 'mpnet', 'bge'
     "top_k": 3,
     "output_subdir": r"firm_summary_index",
