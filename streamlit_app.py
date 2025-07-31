@@ -15,7 +15,7 @@ def main():
 
     # firm_df = pd.read_csv(firm_config.get("firm_csv"))
 
-    INDEX_DIR = r"C:\Users\Daryn Bang\Desktop\Internship\RAG_experiments\RAG_INDEX"
+    INDEX_DIR = r"RAG_INDEX"
 
     # Initialize Pipeline
     pipeline = InternshipRAG_Pipeline(
