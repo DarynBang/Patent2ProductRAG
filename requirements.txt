@@ -21,16 +21,16 @@ streamlit
 
 # Text processing and search
 rank-bm25
+nltk
+
+# Machine Learning
+# torch
+scikit-learn>=1.3.0
 
 # Utilities
-tqdm
+tqdm>=4.65.0
 typing-extensions
 
-# Dimensionality reduction (optional)
-scikit-learn>=1.3.0
-# Additional utilities
-tqdm>=4.65.0  # For progress bars during indexing
+# Google AI integration
+google-genai
 
-
-# Optional: Advanced embedding models
-# sentence-transformers>=2.2.0  # Already in your requirements, but ensure latest version

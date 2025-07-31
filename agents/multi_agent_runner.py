@@ -11,9 +11,9 @@ import pandas as pd
 import torch
 import ast
 import numpy as np
+from config.logging_config import get_logger
 
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 class MultiAgentRunner:
     def __init__(self, firm_summary_rag):
@@ -98,9 +98,9 @@ class MultiAgentRunner:
             if torch.cuda.is_available():
                 torch.cuda.empty_cache()
             gc.collect()
-            logger.info("🗑️ Freed GPU memory after retrieval")
+            logger.info("Freed GPU memory after retrieval")
         except Exception as e:
-            logger.info(f"⚠️ Error freeing memory: {e}")
+            logger.info(f"Error freeing memory: {e}")
 
         # Per-firm Product Suggestions
         product_suggestions: Dict[int, str] = {}
@@ -134,20 +134,20 @@ class MultiAgentRunner:
 
         #    Downstream agents (MarketAnalysisAgent)
 
-        # ma_agent = next((a for a in self.agents if a.name == "MarketAnalysisAgent"), None)
-        # market_analysis_output: Optional[str] = None
-        #
-        # if ma_agent:
-        #     logger.info(f"🤖 Running {ma_agent.name} on all firms...")
-        #     try:
-        #         market_analysis_output = ma_agent.run(
-        #             input_data=self.shared_memory,
-        #             firm_summary_contexts=rag_results,
-        #             product_suggestions=product_suggestions
-        #         )
-        #         logger.info(f"{ma_agent.name} → {market_analysis_output}")
-        #     except Exception as e:
-        #         logger.error(f"Error in {ma_agent.name}: {e}")
+        ma_agent = next((a for a in self.agents if a.name == "MarketAnalysisAgent"), None)
+        market_analysis_output: Optional[str] = None
+        
+        if ma_agent:
+            logger.info(f"🤖 Running {ma_agent.name} on all firms...")
+            try:
+                market_analysis_output = ma_agent.run(
+                    input_data=self.shared_memory,
+                    firm_summary_contexts=rag_results,
+                    product_suggestions=product_suggestions
+                )
+                logger.info(f"{ma_agent.name} → {market_analysis_output}")
+            except Exception as e:
+                logger.error(f"Error in {ma_agent.name}: {e}")
 
 
         # Return the final agent's output
@@ -156,5 +156,5 @@ class MultiAgentRunner:
             "retrieved_firms": rag_results,
             "product_suggestions": product_suggestions,
             "firm_used_text": used_text_flags,
-            # "market_analysis": market_analysis_output,
+            "market_analysis": market_analysis_output,
         }

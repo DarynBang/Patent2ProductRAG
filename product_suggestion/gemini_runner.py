@@ -35,12 +35,12 @@ from sentence_transformers import SentenceTransformer
 
 # === Setup ===
 load_dotenv()
-logger = logging.getLogger(__name__)
-logging.basicConfig(level=logging.INFO)
+from config.logging_config import get_logger
+logger = get_logger(__name__)
 
 try:
     client = genai.Client()
-    logger.info("✅ Gemini client initialized")
+    logger.info("Gemini client initialized")
 except Exception as e:
     logger.error(f"Failed to initialize Gemini client: {e}")
     client = None
@@ -63,7 +63,7 @@ def generate_caption_with_gemini(input_data: dict) -> Tuple[str, bool]:
         return "Gemini client not initialized.", False
 
     if firm_text != "" and cluster_filter.is_meaningful(firm_text):
-        logger.info("✅ Text is meaningful → using TEXT+KEYWORDS prompt")
+        logger.info("Text is meaningful - using TEXT+KEYWORDS prompt")
         prompt = PRODUCT_PROMPT_WITH_TEXT.format(
             firm_text=firm_text,
             firm_keywords=firm_keywords
@@ -71,9 +71,9 @@ def generate_caption_with_gemini(input_data: dict) -> Tuple[str, bool]:
         used_text = True
     else:
         if firm_text != "":
-            logger.info("⚠️ Text deemed not meaningful; using KEYWORDS-only")
+            logger.info("Text deemed not meaningful - using KEYWORDS-only")
         else:
-            logger.info("ℹ️ No text provided; using KEYWORDS-only")
+            logger.info("No text provided - using KEYWORDS-only")
         prompt = PRODUCT_PROMPT_NO_TEXT.format(
             firm_keywords=firm_keywords
         )

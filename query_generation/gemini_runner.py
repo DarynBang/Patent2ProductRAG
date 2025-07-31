@@ -28,12 +28,13 @@ from config.prompt import PLANNING_PROMPT_TEMPLATE
 
 # === Setup ===
 load_dotenv()
-logger = logging.getLogger(__name__)
-logging.basicConfig(level=logging.INFO)
+from config.logging_config import get_logger
+
+logger = get_logger(__name__)
 
 try:
     client = genai.Client()
-    logger.info("✅ Gemini client initialized")
+    logger.info("Gemini client initialized")
 except Exception as e:
     logger.error(f"Failed to initialize Gemini client: {e}")
     client = None

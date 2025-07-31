@@ -1,15 +1,54 @@
+"""
+InternshipRAG_pipeline.py
+
+Main RAG Pipeline for Patent-to-Product Matching System
+
+This module provides the core RAG (Retrieval-Augmented Generation) pipeline that connects
+patent abstracts to relevant firms and generates product suggestions using a multi-agent
+system approach.
+
+Key Components:
+- InternshipRAG_Pipeline: Main pipeline class orchestrating the RAG process
+- FirmSummaryRAG: Handles firm data indexing and retrieval
+- MultiAgentRunner: Manages planning, product suggestion, and market analysis agents
+
+Features:
+- Semantic search with multiple embedding models
+- Multi-agent processing for query optimization and product suggestions
+- Firm data ingestion and indexing with ChromaDB
+- GPU memory management and optimization
+- Configurable retrieval strategies (semantic, keyword, mixed)
+
+Usage:
+    pipeline = InternshipRAG_Pipeline(
+        index_dir="RAG_INDEX",
+        agent_config=agent_config,
+        firm_config=firm_config
+    )
+    results = pipeline.process_query("patent abstract text", top_k=5)
+
+Dependencies:
+    - firm_summary_rag: Core RAG functionality
+    - agents.multi_agent_runner: Multi-agent orchestration
+    - torch: GPU memory management
+    - pandas: Data handling
+"""
+
 import logging
 from firm_summary_rag import FirmSummaryRAG
 import torch
 
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+from config.logging_config import get_logger
+
+logger = get_logger(__name__)
 
 from agents.multi_agent_runner import MultiAgentRunner
 import os
 import gc
 import warnings
 import pandas as pd
+from config.rag_config import firm_config
+from config.agent_config import agent_config
 
 # --- new code --- 
 warnings.filterwarnings("ignore")
@@ -19,9 +58,31 @@ warnings.filterwarnings("ignore")
 # torch.set_default_dtype(torch.bfloat16)
 
 class InternshipRAG_Pipeline:
+    """
+    Main RAG Pipeline for Patent-to-Product Matching.
+    
+    This class orchestrates the entire pipeline from patent abstract input to
+    firm recommendations and product suggestions. It integrates semantic search,
+    multi-agent processing, and result generation.
+    
+    Attributes:
+        index_dir (str): Directory for storing index files
+        multi_agent (MultiAgentRunner): Agent orchestration system
+        firm_to_text_mapping_df (pd.DataFrame): Mapping between firm IDs and extracted text
+        firm_rag (FirmSummaryRAG): RAG system for firm data retrieval
+    
+    Args:
+        index_dir (str): Path to directory for index storage
+        firm_config (dict): Configuration for firm data and retrieval
+        agent_config (dict): Configuration for multi-agent system
+        ingest_only (bool): If True, only perform data ingestion without agent setup
+    """
     def __init__(self, index_dir, firm_config, agent_config, ingest_only=False):
         """
-        Initialize the M3APipeline.
+        Initialize the RAG Pipeline with configuration and data setup.
+        
+        Sets up the vector database, loads firm data, and initializes
+        the multi-agent system for query processing and product suggestions.
         """
         # Initialize RAG indexer and multi-agent QA system
         os.makedirs(index_dir, exist_ok=True)
@@ -48,7 +109,7 @@ class InternshipRAG_Pipeline:
 
             self.multi_agent.register_agent("PlanningAgent", qa_model=qa_planning)
             self.multi_agent.register_agent("ProductSuggestionAgent", qa_model=qa_product_suggestion)
-            # self.multi_agent.register_agent("MarketAnalysisAgent", qa_model=qa_market_analyst)
+            self.multi_agent.register_agent("MarketAnalysisAgent", qa_model=qa_market_analyst)
 
     def ingest_firm(self, force_reindex=False) -> None:
         self.firm_rag.ingest_all(force_reindex=force_reindex)
@@ -60,11 +121,13 @@ class InternshipRAG_Pipeline:
                                   company_keywords: str,
                                   summary_text: str
                                   ):
-        self.firm_rag.add_one(company_id=company_id,
-                              company_name=company_name,
-                              company_keywords=company_keywords,
-                              summary_text=summary_text)
-
+        """Add a new firm or update an existing one"""
+        self.firm_rag.add_one(
+            company_id=company_id,
+            company_name=company_name,
+            company_keywords=company_keywords,
+            summary_text=summary_text
+        )
 
     def process_query(self, patent_abstract: str, top_k: int = 5, planning=False):
         # Pass context + question into the multi-agent system
@@ -72,12 +135,12 @@ class InternshipRAG_Pipeline:
 
 
 def main():
-    from config.agent_config import agent_config
-    from config.rag_config import firm_config
-
-    # Initialize pipeline with configs
-
-    # Consistent index folder under PDF dir
+    """
+    Main function for testing the pipeline directly.
+    
+    This function demonstrates basic usage of the RAG pipeline
+    with a sample patent abstract for diagnostic apparatus.
+    """
     index_dir = r"RAG_INDEX"
     
     patent_abstract = """An apparatus and a method for diagnosis are provided.
@@ -87,6 +150,8 @@ for diagnosing a lesion from the categorized diagnostic models, and a diagnosis 
 and the selected one or more diagnostic model.
 """
 
+    print("🚀 Initializing InternshipRAG Pipeline...")
+    
     pipeline = InternshipRAG_Pipeline(
         index_dir=index_dir,
         agent_config=agent_config,
@@ -94,10 +159,20 @@ and the selected one or more diagnostic model.
         ingest_only=False
     )
 
+    print("📥 Running data ingestion...")
     # Run ingestion
     pipeline.ingest_firm(force_reindex=False)
 
-    pipeline.process_query(patent_abstract)
+    print("🔄 Processing patent abstract...")
+    results = pipeline.process_query(patent_abstract)
+    
+    print("\n📊 Results:")
+    print(f"Found {len(results.get('retrieved_firms', []))} relevant firms")
+    
+    if 'market_analysis' in results:
+        print("✅ Market analysis included")
+    else:
+        print("⚠️ Market analysis not available")
 
 
 if __name__ == '__main__':

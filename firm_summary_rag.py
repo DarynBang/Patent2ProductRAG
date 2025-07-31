@@ -1,3 +1,46 @@
+"""
+firm_summary_rag.py
+
+Core RAG (Retrieval-Augmented Generation) system for firm data processing and retrieval.
+
+This module implements the FirmSummaryRAG class, which handles the indexing and retrieval
+of firm information using semantic embeddings and keyword-based search methods.
+
+Key Features:
+- Multi-modal retrieval (semantic embeddings + BM25 keyword search)
+- ChromaDB vector database integration
+- Configurable embedding models (sentence-transformers)
+- Hybrid search combining semantic similarity and keyword relevance
+- Persistent indexing with incremental updates
+- Memory-efficient processing with GPU optimization
+
+The system processes firm data including:
+- Company summaries and descriptions
+- Business keywords and categories
+- Webpage content and metadata
+- High-tech classification flags
+
+Search Modes:
+- "semantic": Pure vector similarity search
+- "keyword": BM25-based keyword matching
+- "mixed": Hybrid approach combining both methods
+
+Usage:
+    rag = FirmSummaryRAG(
+        collection_name="firm_summary_index",
+        embed_model="sentence-transformers/all-MiniLM-L12-v2",
+        top_k=5
+    )
+    results = rag.query("machine learning startup", top_k=10)
+
+Dependencies:
+    - chromadb: Vector database for semantic search
+    - sentence-transformers: Text embedding models
+    - rank_bm25: BM25 implementation for keyword search
+    - pandas: Data manipulation
+    - torch: GPU memory management
+"""
+
 import os
 import json
 from typing import List, Dict, Any

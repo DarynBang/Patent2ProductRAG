@@ -1,5 +1,42 @@
 """
 agents/product_suggestion_agent.py
+
+Product Suggestion Agent for generating business recommendations.
+
+This module implements the ProductSuggestionAgent class, which analyzes firm
+information and generates relevant product suggestions based on patent abstracts
+and firm capabilities. The agent uses both firm keywords and extracted webpage
+text to provide targeted business recommendations.
+
+Key Features:
+- Multi-modal input processing (keywords + webpage text)
+- Intelligent content filtering using text meaningfulness detection
+- Support for multiple backend LLMs (OpenAI, Gemini, Qwen)
+- Dual-mode operation (text+keywords vs keywords-only)
+- Product recommendation generation for patent-firm matching
+
+The agent operates in two modes:
+1. Full Mode: Uses both firm keywords and meaningful webpage text
+2. Keywords Mode: Falls back to keywords-only when text is not meaningful
+
+Usage:
+    agent = ProductSuggestionAgent(
+        name="ProductSuggestionAgent", 
+        qa_model="gemini"
+    )
+    suggestions, used_text = agent.run({
+        "firm_text": "Company description...",
+        "firm_keywords": ["AI", "machine learning", "healthcare"],
+        "patent_abstract": "Medical diagnosis system..."
+    })
+
+Returns:
+    Tuple[str, bool]: Product suggestions and flag indicating if text was used
+
+Dependencies:
+    - product_suggestion.base_runner: Backend LLM runners
+    - agents.base: Abstract base agent class
+    - torch: GPU memory management
 """
 
 import logging

@@ -16,8 +16,9 @@ Typical Usage:
 """
 
 import logging
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+from config.logging_config import get_logger
+
+logger = get_logger(__name__)
 
 from agents.base import BaseAgent
 from config.prompt import MARKET_ANALYST_PROMPT_TEMPLATE
@@ -25,7 +26,7 @@ from langchain_core.prompts import PromptTemplate
 from langchain.schema import HumanMessage
 from langchain_openai import ChatOpenAI
 from langchain_core.output_parsers import StrOutputParser
-from langchain import HuggingFacePipeline
+from langchain_community.llms.huggingface_pipeline import HuggingFacePipeline
 from langchain_google_genai import ChatGoogleGenerativeAI
 from utils.model_utils import get_qwen_vl_model_and_processor
 from transformers import pipeline
@@ -37,7 +38,7 @@ import torch
 class MarketAnalysisAgent(BaseAgent):
     def __init__(self, name="MarketAnalysisAgent", qa_model="openai", ):
         super().__init__(name)
-        logger.info(f"Initializing Market-Analysis-Agent with model: {qa_model}")
+        logger.info(f"Initializing Market Analysis Agent with model: {qa_model}")
 
         # Instantiate the raw LLM (no prompt bound yet)
         if qa_model == "openai":
@@ -46,7 +47,7 @@ class MarketAnalysisAgent(BaseAgent):
             if "OPENAI_API_KEY" not in os.environ:
                 from dotenv import load_dotenv
                 load_dotenv()
-                logger.info("Loaded .env for OpenAI credentials")
+                logger.info("Loaded environment variables for OpenAI credentials")
             self.llm = ChatOpenAI(model_name="gpt-4o-mini", temperature=0)
 
         elif "gemini" in qa_model:
@@ -83,13 +84,29 @@ class MarketAnalysisAgent(BaseAgent):
 
     def run(self,
             input_data: dict,
-            firm_summary_contexts: Optional[List[dict]] = None
+            firm_summary_contexts: Optional[List[dict]] = None,
+            product_suggestions: Optional[dict] = None
             ) -> str:
         patent_abstract = input_data.get("patent_abstract")
         logger.info("Running Market Analyst Agent")
 
         firm_chunks = [c["chunk"] for c in firm_summary_contexts]
         firm_context_str = "\n ### \n- ".join(firm_chunks)
+        
+        # Enhanced context with product suggestions if available
+        enhanced_context = firm_context_str
+        if product_suggestions:
+            logger.info(f"Including product suggestions for {len(product_suggestions)} firms")
+            product_context_parts = []
+            for firm in firm_summary_contexts:
+                company_id = int(firm.get("company_id", 0))
+                if company_id in product_suggestions and product_suggestions[company_id]:
+                    company_name = firm.get("company_name", f"Company {company_id}")
+                    products = product_suggestions[company_id]
+                    product_context_parts.append(f"{company_name} Products: {products}")
+            
+            if product_context_parts:
+                enhanced_context += "\n\n### Product Information:\n" + "\n".join(product_context_parts)
 
         # Free memory before LLM call
         del firm_summary_contexts,
@@ -99,7 +116,7 @@ class MarketAnalysisAgent(BaseAgent):
 
         template = self.prompt
         prompt_input = {
-            "firm_summary_contexts": firm_context_str,
+            "firm_summary_contexts": enhanced_context,
             "patent_abstract": patent_abstract
         }
 
@@ -119,7 +136,7 @@ class MarketAnalysisAgent(BaseAgent):
             return final
 
         except Exception as e:
-            logger.error("Market Analyst Agent failed:", exc_info=e)
+            logger.error(f"Market Analyst Agent failed: {str(e)}", exc_info=e)
             return "Failed to generate market opportunities."
 
 

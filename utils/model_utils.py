@@ -1,3 +1,36 @@
+"""
+utils/model_utils.py
+
+Model loading and management utilities for Qwen Vision-Language models.
+
+This module provides lazy loading functionality for Qwen2.5-VL models,
+which are used for vision-language understanding tasks in the agent system.
+The models support both text and image inputs for multimodal reasoning.
+
+Key Features:
+- Singleton pattern for efficient model reuse
+- 8-bit quantization for memory efficiency
+- GPU optimization with proper device mapping
+- Configurable model variants (3B, 7B instructions)
+- BitsAndBytesConfig for quantization settings
+
+Models Supported:
+- Qwen/Qwen2.5-VL-3B-Instruct: Lightweight vision-language model
+- Qwen/Qwen2.5-VL-7B-Instruct: Larger capacity model (commented)
+
+Usage:
+    model, processor = get_qwen_vl_model_and_processor()
+    # Use model and processor for vision-language tasks
+
+Note: Requires significant GPU memory (8GB+ recommended for 3B model).
+The models are cached globally to avoid repeated loading overhead.
+
+Dependencies:
+    - transformers: HuggingFace model library
+    - torch: PyTorch framework
+    - bitsandbytes: Quantization library
+"""
+
 from transformers import (
     BitsAndBytesConfig,
     Qwen2_5_VLForConditionalGeneration,

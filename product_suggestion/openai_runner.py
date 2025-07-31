@@ -29,8 +29,8 @@ from utils.cluster_utils import TextClusterFilter
 from typing import Tuple
 
 # Setup logging and client
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+from config.logging_config import get_logger
+logger = get_logger(__name__)
 load_dotenv()
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
@@ -52,10 +52,10 @@ def generate_caption_with_openai(input_data: dict) -> Tuple[str, bool]:
 
     use_text = firm_text != "" and cluster_filter.is_meaningful(firm_text)
     if use_text:
-        logger.info("✅ [Qwen] Running Product Suggestion Agent with both Text + Keywords")
+        logger.info("[OpenAI] Running Product Suggestion Agent with both Text + Keywords")
         prompt = PRODUCT_PROMPT_WITH_TEXT.format(firm_text=firm_text, firm_keywords=firm_keywords)
     else:
-        logger.info("✅ [Qwen] Running Product Suggestion Agent with Keywords only")
+        logger.info("[OpenAI] Running Product Suggestion Agent with Keywords only")
         prompt = PRODUCT_PROMPT_NO_TEXT.format(firm_keywords=firm_keywords)
 
     try:

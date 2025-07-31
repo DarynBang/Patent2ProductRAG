@@ -1,3 +1,36 @@
+"""
+utils/cluster_utils.py
+
+Text clustering and meaningfulness detection utilities.
+
+This module provides the TextClusterFilter class for determining whether
+extracted text content is meaningful for product suggestion generation.
+It uses clustering-based analysis to filter out boilerplate content,
+cookie notices, verification messages, and other non-informative text.
+
+Key Components:
+- TextClusterFilter: Main class for text meaningfulness assessment
+- MEANINGLESS_SNIPPETS: Predefined patterns of non-informative content
+
+Features:
+- Sentence transformer-based text embedding
+- K-means clustering for content analysis
+- Cosine similarity comparison with meaningless patterns
+- Configurable similarity thresholds
+- Efficient caching of embedding models
+
+Usage:
+    filter = TextClusterFilter(
+        model_name="all-mpnet-base-v2",
+        n_clusters=3,
+        threshold=0.7
+    )
+    is_useful = filter.is_meaningful("Company product description...")
+
+The filter helps ensure that product suggestion agents only process
+meaningful business content rather than webpage boilerplate.
+"""
+
 # cluster_utils.py
 import numpy as np
 from sklearn.cluster import KMeans
