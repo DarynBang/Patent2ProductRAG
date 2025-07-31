@@ -1,0 +1,36 @@
+# Core LangChain dependencies
+langchain
+langchain-community
+langchain-openai
+langchain-huggingface
+langchain-google-genai
+
+# Vector database and embeddings
+chromadb
+sentence-transformers
+
+# Data processing
+pandas
+numpy
+
+# Environment and configuration
+python-dotenv
+
+# Streamlit web interface
+streamlit
+
+# Text processing and search
+rank-bm25
+
+# Utilities
+tqdm
+typing-extensions
+
+# Dimensionality reduction (optional)
+scikit-learn>=1.3.0
+# Additional utilities
+tqdm>=4.65.0  # For progress bars during indexing
+
+
+# Optional: Advanced embedding models
+# sentence-transformers>=2.2.0  # Already in your requirements, but ensure latest version
