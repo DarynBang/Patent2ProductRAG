@@ -65,6 +65,9 @@ Patent2ProductRAG is a sophisticated Retrieval-Augmented Generation (RAG) system
 
 ## 📁 Project Structure
 
+<details>
+<summary>Click to view project structure</summary>
+
 ```
 Patent2ProductRAG/
 ├── main.py                    # Clean CLI entry point (107 lines only!)
@@ -141,6 +144,8 @@ Patent2ProductRAG/
 - ⚙️ **utils/cli_utils.py**: Command-line argument handling
 - 🤖 **agents/**: Specialized AI agents for different tasks
 - ⚡ **Guaranteed Exports**: Every test/chat query creates 2 files automatically
+
+</details>
 
 ---
 
@@ -511,17 +516,6 @@ Run tests through the Streamlit interface under the "Testing & Debug" tab.
 - Monitor API usage and quotas
 
 </details>
-
----
-
-## 🔮 Future Enhancements
-
-- [ ] **Multimodal Support**: Patent diagram and image analysis
-- [ ] **Real-time Updates**: Live firm database synchronization
-- [ ] **Advanced Analytics**: Trend analysis and prediction capabilities
-- [ ] **API Endpoints**: RESTful API for programmatic access
-- [ ] **Batch Processing**: Large-scale patent portfolio analysis
-- [ ] **Collaborative Features**: Team sharing and annotation tools
 
 ---
 
